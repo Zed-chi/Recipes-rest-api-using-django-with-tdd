@@ -5,7 +5,10 @@ from django.contrib.auth.models import BaseUserManager, PermissionsMixin, Abstra
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra):
         """ creates and saves a new user """
-        user = self.model(email=email, **extra)
+        user = self.model(
+            email=self.normalize_email(email),
+            **extra
+        )
         user.set_password(password)
         user.save(using=self._db)
 
