@@ -1,4 +1,2 @@
-
 cmd.txt
-
-app/app/__pycache__/
+*__pycache__
