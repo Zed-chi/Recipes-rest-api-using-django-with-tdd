@@ -2,7 +2,6 @@ version: "3"
 
 services:
   app:
-    
     build:
       context: .
     ports:
@@ -12,7 +11,7 @@ services:
     command: >
       sh -c "python manage.py runserver 0.0.0.0:5000"
     environment:
-      - DB-HOST=DB
+      - DB_HOST=db
       - DB_NAME=app
       - DB_USER=postgres
       - DB_PASS=secret
@@ -23,5 +22,5 @@ services:
     image: postgres:10-alpine
     environment:
       - POSTGRES_DB=app
-      - POSTRGRES_USER=postgres
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=secret
