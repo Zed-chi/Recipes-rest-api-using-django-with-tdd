@@ -16,4 +16,3 @@ class Command(BaseCommand):
                 self.stdout.write("Db is unavailable, waiting")
                 time.sleep(1)
         self.stdout.write(self.style.SUCCESS("DB is available"))
-        
