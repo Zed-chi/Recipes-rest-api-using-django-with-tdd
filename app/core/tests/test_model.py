@@ -1,5 +1,11 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from core import models
+
+
+def sample_user(email="test@tes.ru", password="secret"):
+    """ Create a sample user """
+    return get_user_model().objects.create_user(email, password)
 
 
 class ModelTests(TestCase):
@@ -8,8 +14,7 @@ class ModelTests(TestCase):
         email = "test@test.com"
         password = "secret"
         user = get_user_model().objects.create_user(
-            email=email,
-            password=password
+            email=email, password=password
         )
         self.assertEqual(user.email, email)
         self.assertTrue(user.check_password(password))
@@ -19,8 +24,7 @@ class ModelTests(TestCase):
         email = "test@TEST.com"
         password = "secret"
         user = get_user_model().objects.create_user(
-            email=email,
-            password=password
+            email=email, password=password
         )
         self.assertEqual(user.email, email.lower())
 
@@ -31,8 +35,12 @@ class ModelTests(TestCase):
 
     def test_create_new_superuser(self):
         user = get_user_model().objects.create_superuser(
-            email="test@super.com",
-            password="secret"
+            email="test@super.com", password="secret"
         )
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
+
+    def test_tag_str(self):
+        """ test tag string"""
+        tag = models.Tag.objects.create(user=sample_user(), name="qwe")
+        self.assertEqual(str(tag), tag.name)
