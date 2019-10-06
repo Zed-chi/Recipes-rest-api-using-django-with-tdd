@@ -4,16 +4,27 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """ serializer for an user object """
+    """Serializer for Users"""
 
     class Meta:
         model = get_user_model()
         fields = ("email", "password", "name")
-        extra_kwargs = {"password": {"write_only": True, "min_length": 5}}
+        extra_kwargs = {"password": {"write_only": "True", "min_length": 4}}
 
     def create(self, validated_data):
-        """ create new user with enc pass and return it """
+        """Create user with encrypted password and return it"""
         return get_user_model().objects.create_user(**validated_data)
+
+    def update(self, instance, validated_data):
+        """Update user password correctly and returning it"""
+        password = validated_data.pop("password", None)
+        user = super().update(instance, validated_data)
+
+        if password:
+            user.set_password(password)
+            user.save()
+
+        return user
 
 
 class AuthTokenSerializer(serializers.Serializer):
