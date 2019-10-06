@@ -41,11 +41,7 @@ class PublicUserApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_password_too_short(self):
-        payload = {
-            "email": "test@test.com",
-            "password": "bad",
-            "name": "abc",
-        }
+        payload = {"email": "test@test.com", "password": "bad", "name": "abc"}
         res = self.client.post(CREATE_USER_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         user_exists = (
@@ -64,28 +60,20 @@ class PublicUserApiTests(TestCase):
         res = self.client.post(TOKEN_URL, payload)
         self.assertIn("token", res.data)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-    
+
     def test_create_token_invalid_credentials(self):
         """ Test that token is not created if invalid cred are given """
         create_user(
-            **{"email": "test@test.com",
-            "password": "secret",
-            "name": "123"}
+            **{"email": "test@test.com", "password": "secret", "name": "123"}
         )
-        payload = {
-            "email": "test@test.com",
-            "password": "wrong",
-        }
+        payload = {"email": "test@test.com", "password": "wrong"}
         res = self.client.post(TOKEN_URL, payload)
         self.assertNotIn("token", res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_token_no_user(self):
         """ Tests that token is not created if user doesnt exist """
-        payload = {
-            "email": "test@test.com",
-            "password": "secret",
-        }
+        payload = {"email": "test@test.com", "password": "secret"}
         res = self.client.post(TOKEN_URL, payload)
         self.assertNotIn("token", res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
