@@ -50,3 +50,12 @@ class ModelTests(TestCase):
             user=sample_user(), name="tomato"
         )
         self.assertEqual(str(ing), ing.name)
+
+    def test_recipe_as_str(self):
+        recipe = models.Recipe.objects.create(
+            user=sample_user(),
+            title="tomato with potato",
+            time_minutes=5,
+            price=5.00,
+        )
+        self.assertEqual(str(recipe), recipe.title)
