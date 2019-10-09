@@ -5,9 +5,16 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from core.models import Recipe, Tag, Ingredient
 from recipe.serializers import RecipeSerializer, RecipeDetailSerializer
+import tempfile
+import os
+from PIL import Image
 
 
 RECIPE_URL = reverse("recipe:recipe-list")
+
+
+def image_upload_url(recipe_id):
+    return reverse("recipe:recipe-upload-image", args=[recipe_id])
 
 
 def detail_url(id):
@@ -145,3 +152,33 @@ class PrivateRecipeApiTests(TestCase):
         self.assertEqual(recipe.title, payload["title"])
         self.assertEqual(recipe.time_minutes, payload["time_minutes"])
         self.assertEqual(recipe.price, payload["price"])
+
+
+class RecipeImageUploadTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(
+            email="test@test.ru", password="secret"
+        )
+        self.client.force_authenticate(self.user)
+        self.recipe = sample_recipe(user=self.user)
+
+    def tearDown(self):
+        self.recipe.image.delete()
+
+    def test_upload(self):
+        url = image_upload_url(self.recipe.id)
+        with tempfile.NamedTemporaryFile(suffix=".jpg") as file:
+            image = Image.new("RGB", (10, 10))
+            image.save(file, format="JPEG")
+            file.seek(0)
+            res = self.client.post(url, {"image": file}, format="multipart")
+        self.recipe.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn("image", res.data)
+        self.assertTrue(os.path.exists(self.recipe.image.path))
+
+    def test_upload_bad_request(self):
+        url = image_upload_url(self.recipe.id)
+        res = self.client.post(url, {"image": "qwe"}, format="multipart")
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
