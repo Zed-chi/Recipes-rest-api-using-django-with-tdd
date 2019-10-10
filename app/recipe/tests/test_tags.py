@@ -85,7 +85,7 @@ class PrivateTagsApiTests(TestCase):
 
     def test_retrieve_tags_assigned_unique(self):
         tag1 = Tag.objects.create(user=self.user, name="qwe")
-        tag2 = Tag.objects.create(user=self.user, name="qwe2")
+        Tag.objects.create(user=self.user, name="qwe2")
         recipe = Recipe.objects.create(
             user=self.user, title="asd", time_minutes=5, price=45.80
         )
@@ -95,6 +95,4 @@ class PrivateTagsApiTests(TestCase):
         )
         recipe2.tags.add(tag1)
         res = self.client.get(TAGS_URL, {"assigned_only": 1})
-        serializer1 = TagSerializer(tag1)
-        serializer2 = TagSerializer(tag2)
         self.assertEqual(len(res.data), 1)

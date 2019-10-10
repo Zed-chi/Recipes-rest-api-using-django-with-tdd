@@ -85,7 +85,7 @@ class PrivateIngredientsApiTests(TestCase):
 
     def test_retrieve_ingredients_assigned_unique(self):
         ingredient1 = Ingredient.objects.create(user=self.user, name="qwe")
-        ingredient2 = Ingredient.objects.create(user=self.user, name="qwe2")
+        Ingredient.objects.create(user=self.user, name="qwe2")
         recipe = Recipe.objects.create(
             user=self.user, title="asd", time_minutes=5, price=45.80
         )
@@ -95,6 +95,4 @@ class PrivateIngredientsApiTests(TestCase):
         )
         recipe2.ingredients.add(ingredient1)
         res = self.client.get(INGREDIENT_URL, {"assigned_only": 1})
-        serializer1 = IngredientSerializer(ingredient1)
-        serializer2 = IngredientSerializer(ingredient2)
         self.assertEqual(len(res.data), 1)
